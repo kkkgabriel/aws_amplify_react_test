@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect} from 'react';
+import Amplify, { DataStore, Predicates } from "aws-amplify";
+import {Note} from './models';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+	const [content, updateContent] = useState('');
+
+	const makeNewNote = async () => {
+		try {
+			await DataStore.save(
+			new Note({
+				content: "Potato"
+			})
+		);
+			console.log("Post saved successfully!");
+		} catch (error) {
+			console.log("Error saving post", error);
+		}
+	}
+
+	const seeNotes = async () => {
+		try {
+			const notes = await DataStore.query(Note);
+			console.log("Posts retrieved successfully!")
+			console.log(notes);
+		} catch (error) {
+			console.log("Error retrieving posts", error);
+		}
+	}
+
+	return (
+		<div>
+			<button onClick={makeNewNote}>save</button>
+
+			<button onClick={seeNotes}>see</button>
+		</div>
+	)
 }
 
 export default App;
